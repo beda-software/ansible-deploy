@@ -1,0 +1,6 @@
+---
+- name: "Install git package with apt"
+  apt:
+    pkg: "git"
+    state: latest
+    update_cache: yes

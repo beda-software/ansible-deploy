@@ -1,0 +1,11 @@
+---
+- name: create directory for ssh identity file
+  file:
+    state: directory
+    dest: "{{ ssh_directory }}"
+
+- name: render ssh identity file
+  copy:
+    content: "{{ ssh_private_key }}"
+    dest: "{{ ssh_identity_file_path }}"
+    mode: 0400

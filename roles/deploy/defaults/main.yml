@@ -1,0 +1,5 @@
+---
+docker_compose_files: "{{ lookup('env', 'DOCKER_COMPOSE_FILES').split(',') }}"
+repository_url: "{{ lookup('env', 'CI_REPOSITORY_URL') }}"
+repository_branch: "{{ lookup('env', 'CI_COMMIT_REF_NAME') }}"
+env_file: "{{ lookup('env', 'ENV_FILE') }}"

@@ -1,0 +1,34 @@
+---
+
+- name: "Create /app directory"
+  file:
+    path: /app
+    state: directory
+    mode: 0755
+
+- name: "Clone repository with branch {{ repository_branch }}"
+  git:
+    repo: "{{ repository_url }}"
+    accept_hostkey: yes
+    version: "{{ repository_branch }}"
+    dest: /app
+    recursive: no
+
+- name: "Set up .env file"
+  copy:
+    content: "{{ env_file }}"
+    dest: "/app/.env"
+    mode: 0755
+  when: env_file != ''
+
+- name: "Run docker container"
+  docker_service:
+    project_src: /app
+    files: "{{ docker_compose_files }}"
+    restarted: yes
+    build: yes
+    pull: yes
+
+- name: "Remove old untagged images"
+  shell: "docker images -q -f dangling=true | xargs --no-run-if-empty docker rmi"
+

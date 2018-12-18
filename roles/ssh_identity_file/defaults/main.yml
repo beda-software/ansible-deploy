@@ -1,0 +1,4 @@
+---
+ssh_directory:  .ssh
+ssh_identity_file_path: "{{ ssh_directory }}/id_rsa"
+ssh_private_key: "{{ lookup('env', 'SSH_PRIVATE_KEY') }}"
