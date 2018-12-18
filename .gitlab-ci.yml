@@ -1,0 +1,35 @@
+stages:
+  - build
+  - release
+  - cleanup
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+
+variables:
+  LATEST_IMAGE: $CI_REGISTRY_IMAGE:latest
+  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
+  BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_BUILD_REF
+
+build:
+  stage: build
+  script:
+    - docker build -t $BUILD_IMAGE .
+
+release:
+  stage: release
+  script:
+    - docker tag $BUILD_IMAGE $CONTAINER_RELEASE_IMAGE
+    - docker push $CONTAINER_RELEASE_IMAGE
+  only:
+    - master
+    - develop
+
+cleanup:
+  stage: cleanup
+  script:
+  - bash -c "[ -z $(docker images -q $BUILD_IMAGE) ] || docker rmi $BUILD_IMAGE"
+  - docker ps -q -f "status=exited" | xargs --no-run-if-empty docker rm
+  - docker images -q -f dangling=true | xargs --no-run-if-empty docker rmi
+  when: always
+
